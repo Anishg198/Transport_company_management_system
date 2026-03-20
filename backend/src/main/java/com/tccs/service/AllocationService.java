@@ -155,13 +155,13 @@ public class AllocationService {
                 .filter(c -> c.getAssignedTruckId() == null)
                 .map(c -> {
                     Map<String, Object> m = new LinkedHashMap<>();
-                    m.put("consignmentNumber", c.getConsignmentNumber());
+                    m.put("consignment_number", c.getConsignmentNumber());
                     m.put("destination", c.getDestination());
                     m.put("volume", c.getVolume());
                     m.put("status", c.getStatus().name());
-                    m.put("senderAddress", c.getSenderAddress());
-                    m.put("receiverAddress", c.getReceiverAddress());
-                    m.put("transportCharges", c.getTransportCharges());
+                    m.put("sender_address", c.getSenderAddress());
+                    m.put("receiver_address", c.getReceiverAddress());
+                    m.put("transport_charges", c.getTransportCharges());
                     return m;
                 }).collect(java.util.stream.Collectors.toList());
     }
