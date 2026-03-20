@@ -90,40 +90,35 @@ function AnimatedScene() {
 
         {/* Person 1 - Blue, handing package */}
         <g transform="translate(200,230)">
-          {/* Head */}
           <circle cx="0" cy="-30" r="8" fill="#2980ff" opacity="0.9"/>
-          {/* Body */}
           <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#1a2a5e" opacity="0.9"/>
-          {/* Left arm - hangs naturally to the left-down */}
-          <line x1="-5" y1="-19" x2="-17" y2="-9" stroke="#2980ff" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
-          {/* Right arm group - pivots at shoulder (5, -19) */}
-          <g transform="translate(5,-19)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out infinite'}}>
-            <line x1="0" y1="0" x2="20" y2="0" stroke="#2980ff" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
-            {/* Package at hand */}
-            <rect x="19" y="-6" width="11" height="10" rx="2" fill="#f59e0b" opacity="0.95"/>
-            <line x1="19" y1="-1" x2="30" y2="-1" stroke="#fbbf24" strokeWidth="0.9" opacity="0.55"/>
-            <line x1="24.5" y1="-6" x2="24.5" y2="4" stroke="#fbbf24" strokeWidth="0.9" opacity="0.55"/>
+          {/* Left arm - diagonal down-left */}
+          <line x1="-5" y1="-18" x2="-14" y2="-8" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          {/* Right arm - diagonal down-right toward package, animated */}
+          <g transform="translate(5,-18)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out infinite'}}>
+            <line x1="0" y1="0" x2="14" y2="8" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+            <rect x="13" y="4" width="10" height="8" rx="2" fill="#f59e0b" opacity="0.95"/>
+            <line x1="13" y1="8" x2="23" y2="8" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
+            <line x1="18" y1="4" x2="18" y2="12" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
           </g>
           {/* Legs */}
-          <line x1="-2" y1="-2" x2="-5" y2="12" stroke="#1a2a5e" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
-          <line x1="2" y1="-2" x2="5" y2="12" stroke="#1a2a5e" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
+          <line x1="-2" y1="-2" x2="-6" y2="12" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
+          <line x1="2" y1="-2" x2="6" y2="12" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
         </g>
 
         {/* Person 2 - Green, receiving package */}
         <g transform="translate(260,230)">
-          {/* Head */}
           <circle cx="0" cy="-30" r="8" fill="#22c55e" opacity="0.9"/>
-          {/* Body */}
           <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#14532d" opacity="0.9"/>
-          {/* Left arm group - pivots at shoulder (-5,-19), reaches left to receive */}
-          <g transform="translate(-5,-19)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out 0.8s infinite reverse'}}>
-            <line x1="0" y1="0" x2="-20" y2="0" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
+          {/* Left arm - diagonal down-left toward package, animated */}
+          <g transform="translate(-5,-18)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out 0.8s infinite reverse'}}>
+            <line x1="0" y1="0" x2="-14" y2="8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
           </g>
-          {/* Right arm - hangs naturally to the right-down */}
-          <line x1="5" y1="-19" x2="17" y2="-9" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
+          {/* Right arm - diagonal down-right */}
+          <line x1="5" y1="-18" x2="14" y2="-8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
           {/* Legs */}
-          <line x1="-2" y1="-2" x2="-5" y2="12" stroke="#14532d" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
-          <line x1="2" y1="-2" x2="5" y2="12" stroke="#14532d" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
+          <line x1="-2" y1="-2" x2="-6" y2="12" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
+          <line x1="2" y1="-2" x2="6" y2="12" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
         </g>
 
         {/* MOVING TRUCK */}

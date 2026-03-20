@@ -78,31 +78,31 @@ function AnimatedScene() {
           <line x1="292" y1="256" x2="310" y2="256" stroke="#a78bfa" strokeWidth="0.8" opacity="0.5"/>
         </g>
 
-        {/* Person 1 */}
+        {/* Person 1 - Blue, handing package */}
         <g transform="translate(200,230)">
           <circle cx="0" cy="-30" r="8" fill="#2980ff" opacity="0.9"/>
-          <rect x="-6" y="-22" width="12" height="20" rx="3" fill="#1a2a5e" opacity="0.9"/>
-          <g className="person-arm-rl">
-            <rect x="-14" y="-18" width="10" height="4" rx="2" fill="#2980ff" opacity="0.8"/>
+          <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#1a2a5e" opacity="0.9"/>
+          <line x1="-5" y1="-18" x2="-14" y2="-8" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          <g transform="translate(5,-18)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out infinite'}}>
+            <line x1="0" y1="0" x2="14" y2="8" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+            <rect x="13" y="4" width="10" height="8" rx="2" fill="#f59e0b" opacity="0.95"/>
+            <line x1="13" y1="8" x2="23" y2="8" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
+            <line x1="18" y1="4" x2="18" y2="12" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
           </g>
-          <g className="person-arm-rr">
-            <rect x="4" y="-18" width="14" height="4" rx="2" fill="#2980ff" opacity="0.8"/>
-            <rect x="16" y="-22" width="10" height="8" rx="1" fill="#f59e0b" opacity="0.9"/>
-          </g>
-          <rect x="-5" y="-2" width="4" height="12" rx="2" fill="#1a2a5e" opacity="0.9"/>
-          <rect x="1" y="-2" width="4" height="12" rx="2" fill="#1a2a5e" opacity="0.9"/>
+          <line x1="-2" y1="-2" x2="-6" y2="12" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
+          <line x1="2" y1="-2" x2="6" y2="12" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
         </g>
 
-        {/* Person 2 */}
+        {/* Person 2 - Green, receiving package */}
         <g transform="translate(260,230)">
           <circle cx="0" cy="-30" r="8" fill="#22c55e" opacity="0.9"/>
-          <rect x="-6" y="-22" width="12" height="20" rx="3" fill="#14532d" opacity="0.9"/>
-          <g style={{animation:'personArm 2s ease-in-out 0.5s infinite reverse', transformOrigin:'0px -18px'}}>
-            <rect x="-18" y="-18" width="14" height="4" rx="2" fill="#22c55e" opacity="0.8"/>
+          <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#14532d" opacity="0.9"/>
+          <g transform="translate(-5,-18)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out 0.8s infinite reverse'}}>
+            <line x1="0" y1="0" x2="-14" y2="8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
           </g>
-          <rect x="4" y="-18" width="10" height="4" rx="2" fill="#22c55e" opacity="0.8"/>
-          <rect x="-5" y="-2" width="4" height="12" rx="2" fill="#14532d" opacity="0.9"/>
-          <rect x="1" y="-2" width="4" height="12" rx="2" fill="#14532d" opacity="0.9"/>
+          <line x1="5" y1="-18" x2="14" y2="-8" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          <line x1="-2" y1="-2" x2="-6" y2="12" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
+          <line x1="2" y1="-2" x2="6" y2="12" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
         </g>
 
         {/* MOVING TRUCK */}
