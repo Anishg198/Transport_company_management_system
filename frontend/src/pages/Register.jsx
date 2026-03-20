@@ -78,29 +78,25 @@ function AnimatedScene() {
           <line x1="292" y1="256" x2="310" y2="256" stroke="#a78bfa" strokeWidth="0.8" opacity="0.5"/>
         </g>
 
-        {/* Person 1 - Blue, handing package */}
+        {/* Person 1 - Blue, handing package (static natural pose) */}
         <g transform="translate(200,230)">
           <circle cx="0" cy="-30" r="8" fill="#2980ff" opacity="0.9"/>
           <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#1a2a5e" opacity="0.9"/>
-          <line x1="-5" y1="-20" x2="-15" y2="-11" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          <g transform="translate(5,-20)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out infinite'}}>
-            <line x1="0" y1="0" x2="17" y2="-7" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-            <rect x="16" y="-13" width="10" height="8" rx="2" fill="#f59e0b" opacity="0.95"/>
-            <line x1="16" y1="-9" x2="26" y2="-9" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
-            <line x1="21" y1="-13" x2="21" y2="-5" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
-          </g>
+          <line x1="-5" y1="-18" x2="-14" y2="-9" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          <line x1="5" y1="-18" x2="23" y2="-15" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          <rect x="22" y="-20" width="10" height="8" rx="2" fill="#f59e0b" opacity="0.95"/>
+          <line x1="22" y1="-16" x2="32" y2="-16" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
+          <line x1="27" y1="-20" x2="27" y2="-12" stroke="#fbbf24" strokeWidth="0.8" opacity="0.5"/>
           <line x1="-2" y1="-2" x2="-6" y2="12" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
           <line x1="2" y1="-2" x2="6" y2="12" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
         </g>
 
-        {/* Person 2 - Green, receiving package */}
+        {/* Person 2 - Green, receiving package (static natural pose) */}
         <g transform="translate(260,230)">
           <circle cx="0" cy="-30" r="8" fill="#22c55e" opacity="0.9"/>
           <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#14532d" opacity="0.9"/>
-          <g transform="translate(-5,-20)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out 0.8s infinite reverse'}}>
-            <line x1="0" y1="0" x2="-17" y2="-7" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          </g>
-          <line x1="5" y1="-20" x2="15" y2="-11" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          <line x1="-5" y1="-18" x2="-23" y2="-15" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
+          <line x1="5" y1="-18" x2="14" y2="-9" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
           <line x1="-2" y1="-2" x2="-6" y2="12" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
           <line x1="2" y1="-2" x2="6" y2="12" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9"/>
         </g>
