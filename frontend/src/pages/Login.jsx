@@ -20,9 +20,6 @@ function AnimatedScene() {
         .star-2 { animation: starTwinkle 2s ease-in-out 0.7s infinite; }
         .star-3 { animation: starTwinkle 2s ease-in-out 1.4s infinite; }
         .warehouse-glow { animation: warehousePulse 3s ease-in-out infinite; }
-        .person-bob-1 { animation: bodyBob 1.6s ease-in-out infinite; }
-        .person-bob-2 { animation: bodyBob 1.6s ease-in-out 0.8s infinite; }
-        .pkg-arc { animation: pkgArc 3.2s cubic-bezier(.45,0,.55,1) infinite; }
         .belt-move { animation: beltScroll 1s linear infinite; }
         .belt-pkg-1 { animation: beltPkg 4s linear 0s infinite; }
         .belt-pkg-2 { animation: beltPkg 4s linear 1.3s infinite; }
@@ -32,14 +29,6 @@ function AnimatedScene() {
         @keyframes roadMove    { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -60; } }
         @keyframes starTwinkle { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
         @keyframes warehousePulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.65; } }
-        @keyframes bodyBob     { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
-        @keyframes pkgArc {
-          0%          { transform: translate(0px,0px);    opacity: 0; }
-          6%          { transform: translate(0px,0px);    opacity: 1; }
-          50%         { transform: translate(52px,-34px); opacity: 1; }
-          85%         { transform: translate(104px,0px);  opacity: 1; }
-          92%,100%    { transform: translate(104px,0px);  opacity: 0; }
-        }
         @keyframes beltScroll  { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -20; } }
         @keyframes beltPkg     { 0% { transform: translateX(0); opacity:1; } 80% { opacity:1; } 100% { transform: translateX(130px); opacity:0; } }
         @keyframes signalBlink { 0%,45%,100% { opacity:0.2; } 50%,95% { opacity:1; } }
@@ -108,52 +97,6 @@ function AnimatedScene() {
         <rect x="0" y="347" width="500" height="3" fill="#1a1a2e"/>
         <line x1="0" y1="320" x2="500" y2="320" stroke="#2a3a5e" strokeWidth="2" strokeDasharray="30 20" className="road-line"/>
         <ellipse cx="250" cy="290" rx="200" ry="15" fill="#0066ff" opacity="0.05"/>
-
-        {/* ── Person 1 – Blue (bobs up/down, arms static) ── */}
-        {/* Placed at scene (178, 240); right arm tip ≈ scene (201, 222) */}
-        <g className="person-bob-1" transform="translate(178,240)">
-          <circle cx="0" cy="-32" r="9" fill="#2980ff" opacity="0.9"/>
-          <rect x="-6" y="-23" width="12" height="22" rx="3" fill="#1a2a5e" opacity="0.9"/>
-          {/* left arm hangs diagonally down-left from shoulder */}
-          <line x1="-6" y1="-19" x2="-16" y2="-9" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          {/* right arm extends forward at chest height */}
-          <line x1="6"  y1="-19" x2="23"  y2="-17" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          {/* legs – animated scissor via SVG animateTransform (no CSS pivot bug) */}
-          <line x1="-3" y1="-1" x2="-7" y2="14" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 -3 -1;14 -3 -1;0 -3 -1;-14 -3 -1;0 -3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-          <line x1="3"  y1="-1" x2="7"  y2="14" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 3 -1;-14 3 -1;0 3 -1;14 3 -1;0 3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-        </g>
-
-        {/* ── Person 2 – Green (bobs up/down, arms static) ── */}
-        {/* Placed at scene (285, 240); left arm tip ≈ scene (262, 222) */}
-        <g className="person-bob-2" transform="translate(285,240)">
-          <circle cx="0" cy="-32" r="9" fill="#22c55e" opacity="0.9"/>
-          <rect x="-6" y="-23" width="12" height="22" rx="3" fill="#14532d" opacity="0.9"/>
-          {/* left arm extends forward at chest height */}
-          <line x1="-6"  y1="-19" x2="-23" y2="-17" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          {/* right arm hangs diagonally down-right */}
-          <line x1="6" y1="-19" x2="16"  y2="-9"  stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          {/* legs */}
-          <line x1="-3" y1="-1" x2="-7" y2="14" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 -3 -1;-14 -3 -1;0 -3 -1;14 -3 -1;0 -3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-          <line x1="3"  y1="-1" x2="7"  y2="14" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 3 -1;14 3 -1;0 3 -1;-14 3 -1;0 3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-        </g>
-
-        {/* ── Flying package arc: travels from blue's hand → green's hand ── */}
-        {/* Blue arm tip at scene ≈ (201,222); arc spans 104px right, peaks 34px up */}
-        <g className="pkg-arc">
-          <rect x="197" y="217" width="12" height="10" rx="2" fill="#f59e0b"/>
-          <line x1="197" y1="222" x2="209" y2="222" stroke="#fbbf24" strokeWidth="0.9" opacity="0.7"/>
-          <line x1="203" y1="217" x2="203" y2="227" stroke="#fbbf24" strokeWidth="0.9" opacity="0.7"/>
-          {/* sparkle dot that trails */}
-          <circle cx="203" cy="212" r="2" fill="#fbbf24" opacity="0.5"/>
-        </g>
 
         {/* MOVING TRUCK */}
         <g className="truck-anim">

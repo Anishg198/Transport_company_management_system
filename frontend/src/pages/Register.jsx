@@ -14,9 +14,6 @@ function AnimatedScene() {
         .star-r2 { animation: starTwinkleR 2s ease-in-out 0.7s infinite; }
         .star-r3 { animation: starTwinkleR 2s ease-in-out 1.4s infinite; }
         .warehouse-glow-r { animation: warehousePulseR 3s ease-in-out infinite; }
-        .person-bob-r1 { animation: bodyBobR 1.6s ease-in-out infinite; }
-        .person-bob-r2 { animation: bodyBobR 1.6s ease-in-out 0.8s infinite; }
-        .pkg-arc-r { animation: pkgArcR 3.2s cubic-bezier(.45,0,.55,1) infinite; }
         .belt-move-r { animation: beltScrollR 1s linear infinite; }
         .belt-pkg-r1 { animation: beltPkgR 4s linear 0s infinite; }
         .belt-pkg-r2 { animation: beltPkgR 4s linear 1.3s infinite; }
@@ -26,14 +23,6 @@ function AnimatedScene() {
         @keyframes roadMoveR    { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -60; } }
         @keyframes starTwinkleR { 0%,100% { opacity: 0.2; } 50% { opacity: 1; } }
         @keyframes warehousePulseR { 0%,100% { opacity: 0.3; } 50% { opacity: 0.65; } }
-        @keyframes bodyBobR     { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-5px); } }
-        @keyframes pkgArcR {
-          0%          { transform: translate(0px,0px);    opacity: 0; }
-          6%          { transform: translate(0px,0px);    opacity: 1; }
-          50%         { transform: translate(52px,-34px); opacity: 1; }
-          85%         { transform: translate(104px,0px);  opacity: 1; }
-          92%,100%    { transform: translate(104px,0px);  opacity: 0; }
-        }
         @keyframes beltScrollR  { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -20; } }
         @keyframes beltPkgR     { 0% { transform: translateX(0); opacity:1; } 80% { opacity:1; } 100% { transform: translateX(130px); opacity:0; } }
         @keyframes signalBlinkR { 0%,45%,100% { opacity:0.2; } 50%,95% { opacity:1; } }
@@ -79,39 +68,6 @@ function AnimatedScene() {
         <rect x="0" y="347" width="500" height="3" fill="#1a1a2e"/>
         <line x1="0" y1="320" x2="500" y2="320" stroke="#2a3a5e" strokeWidth="2" strokeDasharray="30 20" className="road-line-r"/>
         <ellipse cx="250" cy="290" rx="200" ry="15" fill="#0066ff" opacity="0.05"/>
-
-        <g className="person-bob-r1" transform="translate(178,240)">
-          <circle cx="0" cy="-32" r="9" fill="#2980ff" opacity="0.9"/>
-          <rect x="-6" y="-23" width="12" height="22" rx="3" fill="#1a2a5e" opacity="0.9"/>
-          <line x1="-6" y1="-19" x2="-16" y2="-9" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          <line x1="6"  y1="-19" x2="23"  y2="-17" stroke="#2980ff" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          <line x1="-3" y1="-1" x2="-7" y2="14" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 -3 -1;14 -3 -1;0 -3 -1;-14 -3 -1;0 -3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-          <line x1="3" y1="-1" x2="7" y2="14" stroke="#1a2a5e" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 3 -1;-14 3 -1;0 3 -1;14 3 -1;0 3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-        </g>
-
-        <g className="person-bob-r2" transform="translate(285,240)">
-          <circle cx="0" cy="-32" r="9" fill="#22c55e" opacity="0.9"/>
-          <rect x="-6" y="-23" width="12" height="22" rx="3" fill="#14532d" opacity="0.9"/>
-          <line x1="-6" y1="-19" x2="-23" y2="-17" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          <line x1="6"  y1="-19" x2="16"  y2="-9"  stroke="#22c55e" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-          <line x1="-3" y1="-1" x2="-7" y2="14" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 -3 -1;-14 -3 -1;0 -3 -1;14 -3 -1;0 -3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-          <line x1="3" y1="-1" x2="7" y2="14" stroke="#14532d" strokeWidth="2.5" strokeLinecap="round" opacity="0.9">
-            <animateTransform attributeName="transform" type="rotate" values="0 3 -1;14 3 -1;0 3 -1;-14 3 -1;0 3 -1" dur="1.6s" repeatCount="indefinite"/>
-          </line>
-        </g>
-
-        <g className="pkg-arc-r">
-          <rect x="197" y="217" width="12" height="10" rx="2" fill="#f59e0b"/>
-          <line x1="197" y1="222" x2="209" y2="222" stroke="#fbbf24" strokeWidth="0.9" opacity="0.7"/>
-          <line x1="203" y1="217" x2="203" y2="227" stroke="#fbbf24" strokeWidth="0.9" opacity="0.7"/>
-          <circle cx="203" cy="212" r="2" fill="#fbbf24" opacity="0.5"/>
-        </g>
 
         <g className="truck-anim-r">
           <rect x="10" y="258" width="72" height="32" rx="3" fill="#0d1a3e"/>
