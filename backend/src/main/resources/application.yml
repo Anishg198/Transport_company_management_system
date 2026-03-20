@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tccs-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tccs_db
+    username: ${DB_USER:anishgupta}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 20000
+      idle-timeout: 300000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  sql:
+    init:
+      mode: never
+
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss.SSSZ
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+tccs:
+  jwt:
+    secret: tccs_super_secret_jwt_key_2024_transport_system_java_edition_long_enough
+    expiration: 28800000   # 8 hours in ms
+  allocation:
+    threshold: 500.0
+  cors:
+    allowed-origins: http://localhost:5173
+
+logging:
+  level:
+    com.tccs: INFO
+    org.springframework.security: DEBUG

@@ -1,0 +1,178 @@
+import React, { useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { FileText, Search, Printer, ArrowLeft, Package } from 'lucide-react'
+import { billsAPI } from '../services/api'
+import { useToast } from '../components/ui/Toast'
+import { formatDateTime, formatCurrency, formatVolume, getStatusBadgeClass } from '../lib/utils'
+import Header from '../components/Layout/Header'
+import { PageLoader } from '../components/ui/LoadingSkeleton'
+
+function BillView({ bill, consignment, onBack }) {
+  return (
+    <div className="p-6 max-w-2xl mx-auto space-y-5 animate-fade-in" id="bill-print">
+      <div className="flex items-center justify-between no-print mb-4">
+        <button onClick={onBack} className="btn-secondary"><ArrowLeft size={16} /> Search Again</button>
+        <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Print Bill</button>
+      </div>
+
+      <div className="glass-card glow-border-amber p-6">
+        {/* Bill Header */}
+        <div className="flex items-start justify-between mb-6 pb-5 border-b border-white/10">
+          <div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest mb-1">TCCS Transport Invoice</div>
+            <h1 className="text-2xl font-black text-white">TAX INVOICE</h1>
+            <div className="text-xs text-gray-400 mt-1">Bill ID: {bill.bill_id}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-black text-amber-400">{formatCurrency(bill.transport_charges)}</div>
+            <div className="text-xs text-gray-400 mt-1">Date: {formatDateTime(bill.registration_date)}</div>
+          </div>
+        </div>
+
+        {/* Consignment info */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div className="text-xs text-gray-500 mb-1">Consignment Number</div>
+              <div className="font-mono font-bold text-electric-400">{bill.consignment_number}</div>
+            </div>
+            {consignment && (
+              <>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Status</div>
+                  <span className={getStatusBadgeClass(consignment.status)}>{consignment.status}</span>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Destination</div>
+                  <div className="text-white">{consignment.destination}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">Volume</div>
+                  <div className="text-white">{formatVolume(consignment.volume)}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="text-xs text-gray-500 mb-1">Sender</div>
+                  <div className="text-gray-300 text-sm">{consignment.sender_address}</div>
+                </div>
+                <div className="col-span-2">
+                  <div className="text-xs text-gray-500 mb-1">Receiver</div>
+                  <div className="text-gray-300 text-sm">{consignment.receiver_address}</div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Pricing breakdown */}
+          <div className="mt-5 pt-5 border-t border-white/10">
+            <div className="text-sm font-semibold text-gray-300 mb-3">Pricing Breakdown</div>
+            <div className="space-y-2">
+              {[
+                { label: 'Volume', value: formatVolume(bill.pricing_breakdown?.volume) },
+                { label: 'Rate per m³', value: `₹${bill.pricing_breakdown?.ratePerCubicMeter}` },
+                { label: 'Base Charge', value: formatCurrency(bill.pricing_breakdown?.baseCharge) },
+                { label: 'Minimum Charge', value: formatCurrency(bill.pricing_breakdown?.minimumCharge) },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between text-sm">
+                  <span className="text-gray-400">{label}</span>
+                  <span className="text-white">{value}</span>
+                </div>
+              ))}
+              {bill.pricing_breakdown?.appliedRule === 'minimum' && (
+                <div className="text-xs text-amber-400/70 text-right">* Minimum charge applied</div>
+              )}
+              <div className="flex justify-between pt-3 border-t border-white/10">
+                <span className="font-bold text-white">Total Transport Charges</span>
+                <span className="font-black text-amber-400 text-xl">{formatCurrency(bill.transport_charges)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 pt-4 border-t border-white/10 text-center text-xs text-gray-600">
+          This is a computer generated bill. No signature required.
+          <br />Generated by TCCS — Transport Company Computerisation System
+        </div>
+      </div>
+
+      <div className="no-print">
+        <Link to={`/consignments/${bill.consignment_number}`} className="btn-secondary w-full justify-center">
+          <Package size={16} /> View Consignment Details
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+export default function Bills() {
+  const { id: urlId } = useParams()
+  const toast = useToast()
+  const [searchId, setSearchId] = useState(urlId || '')
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [searched, setSearched] = useState(false)
+
+  React.useEffect(() => {
+    if (urlId) handleSearch(urlId)
+  }, [urlId])
+
+  const handleSearch = async (id) => {
+    const query = (id || searchId || '').trim()
+    if (!query) return
+    setLoading(true)
+    setSearched(true)
+    try {
+      const { data } = await billsAPI.getByConsignment(query)
+      setResult(data)
+    } catch (err) {
+      setResult(null)
+      if (err.response?.status !== 404) {
+        toast({ type: 'error', title: 'Error', message: err.response?.data?.error || 'Failed to fetch bill' })
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (result) {
+    return (
+      <div>
+        <Header title="Bill" />
+        <BillView bill={result.bill} consignment={result.consignment} onBack={() => setResult(null)} />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <Header title="Bills" />
+      <div className="p-6 animate-fade-in">
+        <div className="max-w-lg mx-auto mt-16">
+          <div className="glass-card glow-border p-8 text-center">
+            <div className="w-16 h-16 bg-electric-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-electric-500/30">
+              <FileText size={28} className="text-electric-400" />
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">Find a Bill</h2>
+            <p className="text-gray-400 text-sm mb-6">Enter the consignment number to view or print the bill</p>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                value={searchId}
+                onChange={e => setSearchId(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                className="input-field font-mono"
+                placeholder="e.g. TCCS-20240301-0001"
+                autoFocus
+              />
+              <button onClick={() => handleSearch()} className="btn-primary px-5 shrink-0" disabled={loading}>
+                {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Search size={16} />}
+              </button>
+            </div>
+            {searched && !result && !loading && (
+              <p className="text-red-400 text-sm mt-4">No bill found for this consignment number</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

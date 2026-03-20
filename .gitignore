@@ -1,0 +1,42 @@
+# Backend
+backend/target/
+backend/.mvn/
+*.class
+*.jar
+*.war
+*.ear
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.DS_Store
+
+# Logs
+*.log
+/tmp/
+
+# Java
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar

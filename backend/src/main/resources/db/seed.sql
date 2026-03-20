@@ -1,0 +1,73 @@
+-- Seed data - only inserts if not already present
+
+-- Users (BCrypt hash of 'password123' and 'admin123')
+INSERT INTO users (user_id, username, password_hash, role, name, branch_location) VALUES
+('a1b2c3d4-e5f6-7890-abcd-ef1234567890','operator1','$2a$12$eImiTXuWVxfM37uY4JANjQ==.TrIbBFsZ4JYl.uf2g6kMf2KjhX1y','BranchOperator','Rajesh Kumar','Mumbai'),
+('b2c3d4e5-f6a7-8901-bcde-f12345678901','manager1', '$2a$12$eImiTXuWVxfM37uY4JANjQ==.TrIbBFsZ4JYl.uf2g6kMf2KjhX1y','TransportManager','Priya Sharma','Delhi'),
+('c3d4e5f6-a7b8-9012-cdef-123456789012','admin1',   '$2a$12$8HdvgSa4OGU5l4SNLO5Iq.jKVBtCbvVR4XHPZ5vEqBlrCiGJKXA6','SystemAdministrator','Suresh Patel','Bangalore')
+ON CONFLICT (username) DO NOTHING;
+
+-- Trucks (UUIDs: a1..a5 prefix)
+INSERT INTO trucks (truck_id, registration_number, capacity, driver_name, driver_license, status, current_location, cargo_volume, destination, status_history) VALUES
+('a1000000-0000-0000-0000-000000000001','MH-12-AB-1234',800.00,'Ramesh Yadav','DL-0120190123456','Available','Mumbai',0,NULL,'[{"status":"Available","timestamp":"2024-01-01T00:00:00Z","note":"Initial registration"}]'),
+('a2000000-0000-0000-0000-000000000002','DL-01-CD-5678',600.00,'Sunil Singh','DL-0220190234567','InTransit','Delhi',520.50,'Chennai','[{"status":"Available","timestamp":"2024-01-01T00:00:00Z"},{"status":"Allocated","timestamp":"2024-03-01T08:00:00Z"},{"status":"InTransit","timestamp":"2024-03-01T10:00:00Z","note":"Departed for Chennai"}]'),
+('a3000000-0000-0000-0000-000000000003','KA-05-EF-9012',700.00,'Amit Verma','DL-0320190345678','Available','Bangalore',0,NULL,'[{"status":"Available","timestamp":"2024-01-15T00:00:00Z"}]'),
+('a4000000-0000-0000-0000-000000000004','TN-22-GH-3456',900.00,'Vijay Kumar','DL-0420190456789','UnderMaintenance','Chennai',0,NULL,'[{"status":"Available","timestamp":"2024-01-10T00:00:00Z"},{"status":"UnderMaintenance","timestamp":"2024-02-15T09:00:00Z","note":"Engine overhaul"}]'),
+('a5000000-0000-0000-0000-000000000005','GJ-06-IJ-7890',750.00,'Deepak Mishra','DL-0520190567890','Allocated','Ahmedabad',350.00,'Pune','[{"status":"Available","timestamp":"2024-02-01T00:00:00Z"},{"status":"Loading","timestamp":"2024-03-10T06:00:00Z"},{"status":"Allocated","timestamp":"2024-03-10T07:00:00Z","note":"Loading consignments for Pune"}]')
+ON CONFLICT (registration_number) DO NOTHING;
+
+-- Pricing Rules
+INSERT INTO pricing_rules (destination, rate_per_cubic_meter, minimum_charge, effective_date, expiry_date, is_active) VALUES
+('Mumbai',    450.00, 2000.00, '2024-01-01', '2024-12-31', TRUE),
+('Delhi',     500.00, 2500.00, '2024-01-01', '2024-12-31', TRUE),
+('Bangalore', 520.00, 2600.00, '2024-01-01', '2024-12-31', TRUE),
+('Chennai',   480.00, 2400.00, '2024-01-01', '2024-12-31', TRUE),
+('Kolkata',   550.00, 2750.00, '2024-01-01', '2024-12-31', TRUE),
+('Hyderabad', 490.00, 2450.00, '2024-01-01', '2024-12-31', TRUE),
+('Pune',      420.00, 1800.00, '2024-01-01', '2024-12-31', TRUE),
+('Ahmedabad', 460.00, 2100.00, '2024-01-01', '2024-12-31', TRUE),
+('Jaipur',    480.00, 2200.00, '2024-01-01', '2024-12-31', TRUE),
+('Lucknow',   510.00, 2550.00, '2024-01-01', '2024-12-31', TRUE)
+ON CONFLICT DO NOTHING;
+
+-- Consignments
+INSERT INTO consignments (consignment_number,volume,destination,sender_address,receiver_address,registration_timestamp,status,assigned_truck_id,transport_charges,status_change_log,created_by) VALUES
+('TCCS-20240301-0001',120.50,'Delhi','42 Marine Lines, Mumbai 400002','15 Connaught Place, New Delhi 110001','2024-03-01T07:00:00Z','InTransit','a2000000-0000-0000-0000-000000000002',60250.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-01T07:00:00Z","note":"Consignment registered"},{"oldStatus":"Registered","newStatus":"AllocatedToTruck","timestamp":"2024-03-01T08:00:00Z"},{"oldStatus":"AllocatedToTruck","newStatus":"InTransit","timestamp":"2024-03-01T10:00:00Z","note":"Truck dispatched"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240301-0002',200.00,'Delhi','8 Nariman Point, Mumbai 400021','7 Rajpath, New Delhi 110001','2024-03-01T07:30:00Z','InTransit','a2000000-0000-0000-0000-000000000002',100000.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-01T07:30:00Z"},{"oldStatus":"Registered","newStatus":"AllocatedToTruck","timestamp":"2024-03-01T08:00:00Z"},{"oldStatus":"AllocatedToTruck","newStatus":"InTransit","timestamp":"2024-03-01T10:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240302-0001',85.00,'Pune','22 Bandra West, Mumbai 400050','5 Koregaon Park, Pune 411001','2024-03-02T09:00:00Z','AllocatedToTruck','a5000000-0000-0000-0000-000000000005',35700.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-02T09:00:00Z"},{"oldStatus":"Registered","newStatus":"AllocatedToTruck","timestamp":"2024-03-10T06:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240302-0002',265.00,'Pune','33 Andheri East, Mumbai 400069','12 Camp Area, Pune 411001','2024-03-02T10:00:00Z','AllocatedToTruck','a5000000-0000-0000-0000-000000000005',111300.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-02T10:00:00Z"},{"oldStatus":"Registered","newStatus":"AllocatedToTruck","timestamp":"2024-03-10T06:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240303-0001',50.00,'Bangalore','1 Fort Area, Mumbai 400001','28 MG Road, Bangalore 560001','2024-03-03T11:00:00Z','Pending',NULL,26000.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-03T11:00:00Z"},{"oldStatus":"Registered","newStatus":"Pending","timestamp":"2024-03-03T11:00:00Z","note":"Awaiting allocation threshold"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240303-0002',180.00,'Bangalore','45 Dadar, Mumbai 400014','17 Indiranagar, Bangalore 560038','2024-03-03T12:00:00Z','Pending',NULL,93600.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-03T12:00:00Z"},{"oldStatus":"Registered","newStatus":"Pending","timestamp":"2024-03-03T12:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240304-0001',310.00,'Chennai','9 Churchgate, Mumbai 400020','66 Anna Salai, Chennai 600002','2024-03-04T08:30:00Z','Pending',NULL,148800.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-04T08:30:00Z"},{"oldStatus":"Registered","newStatus":"Pending","timestamp":"2024-03-04T08:30:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240304-0002',75.00,'Hyderabad','88 Worli, Mumbai 400018','34 Banjara Hills, Hyderabad 500034','2024-03-04T14:00:00Z','Registered',NULL,36750.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-04T14:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240305-0001',420.00,'Kolkata','7 CST Road, Mumbai 400098','22 Park Street, Kolkata 700016','2024-03-05T09:00:00Z','Registered',NULL,231000.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-05T09:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240305-0002',95.00,'Jaipur','55 Goregaon, Mumbai 400063','11 MI Road, Jaipur 302001','2024-03-05T10:30:00Z','Registered',NULL,45600.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-05T10:30:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240306-0001',160.00,'Lucknow','3 Powai, Mumbai 400076','9 Hazratganj, Lucknow 226001','2024-02-20T08:00:00Z','Delivered','a3000000-0000-0000-0000-000000000003',81600.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-02-20T08:00:00Z"},{"oldStatus":"Registered","newStatus":"AllocatedToTruck","timestamp":"2024-02-20T09:00:00Z"},{"oldStatus":"AllocatedToTruck","newStatus":"InTransit","timestamp":"2024-02-20T11:00:00Z"},{"oldStatus":"InTransit","newStatus":"Delivered","timestamp":"2024-02-23T15:30:00Z","note":"Delivered successfully"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240306-0002',235.00,'Ahmedabad','21 Matunga, Mumbai 400019','45 CG Road, Ahmedabad 380009','2024-02-18T07:30:00Z','Delivered','a1000000-0000-0000-0000-000000000001',108100.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-02-18T07:30:00Z"},{"oldStatus":"Registered","newStatus":"AllocatedToTruck","timestamp":"2024-02-18T08:00:00Z"},{"oldStatus":"AllocatedToTruck","newStatus":"InTransit","timestamp":"2024-02-18T10:30:00Z"},{"oldStatus":"InTransit","newStatus":"Delivered","timestamp":"2024-02-19T18:00:00Z","note":"Delivered on time"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240307-0001',140.00,'Delhi','16 Santacruz, Mumbai 400055','3 Lajpat Nagar, New Delhi 110024','2024-03-01T15:00:00Z','Cancelled',NULL,70000.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-01T15:00:00Z"},{"oldStatus":"Registered","newStatus":"Cancelled","timestamp":"2024-03-02T09:00:00Z","note":"Cancelled by sender"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240307-0002',88.00,'Hyderabad','7 Mulund, Mumbai 400080','67 Jubilee Hills, Hyderabad 500033','2024-03-07T11:00:00Z','Registered',NULL,43120.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-07T11:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240308-0001',375.00,'Bangalore','29 Kurla, Mumbai 400070','55 Whitefield, Bangalore 560066','2024-03-08T08:00:00Z','Pending',NULL,195000.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-08T08:00:00Z"},{"oldStatus":"Registered","newStatus":"Pending","timestamp":"2024-03-08T08:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240308-0002',195.00,'Chennai','4 Thane West, Thane 400601','88 T Nagar, Chennai 600017','2024-03-08T09:30:00Z','Pending',NULL,93600.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-08T09:30:00Z"},{"oldStatus":"Registered","newStatus":"Pending","timestamp":"2024-03-08T09:30:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240309-0001',55.00,'Pune','13 Malad, Mumbai 400064','6 Viman Nagar, Pune 411014','2024-03-09T10:00:00Z','Registered',NULL,23100.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-09T10:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240309-0002',290.00,'Kolkata','38 Borivali, Mumbai 400066','19 Salt Lake, Kolkata 700091','2024-03-09T14:00:00Z','Registered',NULL,159500.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-09T14:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240310-0001',115.00,'Jaipur','66 Kandivali, Mumbai 400067','24 Tonk Road, Jaipur 302015','2024-03-10T07:30:00Z','Registered',NULL,55200.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-10T07:30:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('TCCS-20240310-0002',200.00,'Ahmedabad','77 Vasai, Mumbai 401202','78 Satellite Road, Ahmedabad 380015','2024-03-10T11:00:00Z','Registered',NULL,92000.00,'[{"oldStatus":null,"newStatus":"Registered","timestamp":"2024-03-10T11:00:00Z"}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890')
+ON CONFLICT (consignment_number) DO NOTHING;
+
+-- Bills
+INSERT INTO bills (consignment_number, transport_charges, registration_date, pricing_breakdown) VALUES
+('TCCS-20240301-0001',60250.00,'2024-03-01T07:00:00Z','{"volume":120.5,"destination":"Delhi","ratePerCubicMeter":500,"minimumCharge":2500,"baseCharge":60250,"finalCharge":60250,"appliedRule":"rate"}'),
+('TCCS-20240301-0002',100000.00,'2024-03-01T07:30:00Z','{"volume":200,"destination":"Delhi","ratePerCubicMeter":500,"minimumCharge":2500,"baseCharge":100000,"finalCharge":100000,"appliedRule":"rate"}'),
+('TCCS-20240302-0001',35700.00,'2024-03-02T09:00:00Z','{"volume":85,"destination":"Pune","ratePerCubicMeter":420,"minimumCharge":1800,"baseCharge":35700,"finalCharge":35700,"appliedRule":"rate"}'),
+('TCCS-20240302-0002',111300.00,'2024-03-02T10:00:00Z','{"volume":265,"destination":"Pune","ratePerCubicMeter":420,"minimumCharge":1800,"baseCharge":111300,"finalCharge":111300,"appliedRule":"rate"}'),
+('TCCS-20240306-0001',81600.00,'2024-02-20T08:00:00Z','{"volume":160,"destination":"Lucknow","ratePerCubicMeter":510,"minimumCharge":2550,"baseCharge":81600,"finalCharge":81600,"appliedRule":"rate"}')
+ON CONFLICT DO NOTHING;
+
+-- Dispatch Documents
+INSERT INTO dispatch_documents (dispatch_id, truck_id, destination, dispatch_timestamp, total_consignments, total_volume, driver_name, departure_time, arrival_time, dispatch_status, consignment_manifest, created_by) VALUES
+('d1000000-0000-0000-0000-000000000001','a2000000-0000-0000-0000-000000000002','Delhi','2024-03-01T10:00:00Z',2,320.50,'Sunil Singh','2024-03-01T10:00:00Z',NULL,'InTransit','[{"consignmentNumber":"TCCS-20240301-0001","volume":120.5,"senderAddress":"42 Marine Lines, Mumbai 400002","receiverAddress":"15 Connaught Place, New Delhi 110001","charges":60250},{"consignmentNumber":"TCCS-20240301-0002","volume":200,"senderAddress":"8 Nariman Point, Mumbai 400021","receiverAddress":"7 Rajpath, New Delhi 110001","charges":100000}]','b2c3d4e5-f6a7-8901-bcde-f12345678901'),
+('d2000000-0000-0000-0000-000000000002','a5000000-0000-0000-0000-000000000005','Pune','2024-03-10T06:00:00Z',2,350.00,'Deepak Mishra','2024-03-10T06:00:00Z',NULL,'Dispatched','[{"consignmentNumber":"TCCS-20240302-0001","volume":85,"senderAddress":"22 Bandra West, Mumbai 400050","receiverAddress":"5 Koregaon Park, Pune 411001","charges":35700},{"consignmentNumber":"TCCS-20240302-0002","volume":265,"senderAddress":"33 Andheri East, Mumbai 400069","receiverAddress":"12 Camp Area, Pune 411001","charges":111300}]','a1b2c3d4-e5f6-7890-abcd-ef1234567890'),
+('d3000000-0000-0000-0000-000000000003','a1000000-0000-0000-0000-000000000001','Ahmedabad','2024-02-18T10:30:00Z',1,235.00,'Ramesh Yadav','2024-02-18T10:30:00Z','2024-02-19T18:00:00Z','Delivered','[{"consignmentNumber":"TCCS-20240306-0002","volume":235,"senderAddress":"21 Matunga, Mumbai 400019","receiverAddress":"45 CG Road, Ahmedabad 380009","charges":108100}]','b2c3d4e5-f6a7-8901-bcde-f12345678901'),
+('d4000000-0000-0000-0000-000000000004','a3000000-0000-0000-0000-000000000003','Lucknow','2024-02-20T11:00:00Z',1,160.00,'Amit Verma','2024-02-20T11:00:00Z','2024-02-23T15:30:00Z','Delivered','[{"consignmentNumber":"TCCS-20240306-0001","volume":160,"senderAddress":"3 Powai, Mumbai 400076","receiverAddress":"9 Hazratganj, Lucknow 226001","charges":81600}]','b2c3d4e5-f6a7-8901-bcde-f12345678901'),
+('d5000000-0000-0000-0000-000000000005','a4000000-0000-0000-0000-000000000004','Hyderabad','2024-01-15T09:00:00Z',3,580.00,'Vijay Kumar','2024-01-15T09:00:00Z','2024-01-17T20:00:00Z','Delivered','[{"consignmentNumber":"OLD-HYD-001","volume":200,"senderAddress":"Some address, Mumbai","receiverAddress":"Some address, Hyderabad","charges":98000}]','b2c3d4e5-f6a7-8901-bcde-f12345678901')
+ON CONFLICT (dispatch_id) DO NOTHING;
