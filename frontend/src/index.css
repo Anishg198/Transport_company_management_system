@@ -130,6 +130,7 @@
     background: linear-gradient(135deg, transparent 40%, rgba(0,102,255,0.03));
     opacity: 0;
     transition: opacity 0.3s;
+    pointer-events: none;
   }
   .truck-card:hover {
     transform: translateY(-4px);
