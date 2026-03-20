@@ -88,31 +88,42 @@ function AnimatedScene() {
           <line x1="292" y1="256" x2="310" y2="256" stroke="#a78bfa" strokeWidth="0.8" opacity="0.5"/>
         </g>
 
-        {/* Person 1 - handing package */}
+        {/* Person 1 - Blue, handing package */}
         <g transform="translate(200,230)">
+          {/* Head */}
           <circle cx="0" cy="-30" r="8" fill="#2980ff" opacity="0.9"/>
-          <rect x="-6" y="-22" width="12" height="20" rx="3" fill="#1a2a5e" opacity="0.9"/>
-          <g className="person-arm-l">
-            <rect x="-14" y="-18" width="10" height="4" rx="2" fill="#2980ff" opacity="0.8"/>
+          {/* Body */}
+          <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#1a2a5e" opacity="0.9"/>
+          {/* Left arm - hangs naturally to the left-down */}
+          <line x1="-5" y1="-19" x2="-17" y2="-9" stroke="#2980ff" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
+          {/* Right arm group - pivots at shoulder (5, -19) */}
+          <g transform="translate(5,-19)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out infinite'}}>
+            <line x1="0" y1="0" x2="20" y2="0" stroke="#2980ff" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
+            {/* Package at hand */}
+            <rect x="19" y="-6" width="11" height="10" rx="2" fill="#f59e0b" opacity="0.95"/>
+            <line x1="19" y1="-1" x2="30" y2="-1" stroke="#fbbf24" strokeWidth="0.9" opacity="0.55"/>
+            <line x1="24.5" y1="-6" x2="24.5" y2="4" stroke="#fbbf24" strokeWidth="0.9" opacity="0.55"/>
           </g>
-          <g className="person-arm-r">
-            <rect x="4" y="-18" width="14" height="4" rx="2" fill="#2980ff" opacity="0.8"/>
-            <rect x="16" y="-22" width="10" height="8" rx="1" fill="#f59e0b" opacity="0.9"/>
-          </g>
-          <rect x="-5" y="-2" width="4" height="12" rx="2" fill="#1a2a5e" opacity="0.9"/>
-          <rect x="1" y="-2" width="4" height="12" rx="2" fill="#1a2a5e" opacity="0.9"/>
+          {/* Legs */}
+          <line x1="-2" y1="-2" x2="-5" y2="12" stroke="#1a2a5e" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
+          <line x1="2" y1="-2" x2="5" y2="12" stroke="#1a2a5e" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
         </g>
 
-        {/* Person 2 - receiving */}
+        {/* Person 2 - Green, receiving package */}
         <g transform="translate(260,230)">
+          {/* Head */}
           <circle cx="0" cy="-30" r="8" fill="#22c55e" opacity="0.9"/>
-          <rect x="-6" y="-22" width="12" height="20" rx="3" fill="#14532d" opacity="0.9"/>
-          <g style={{animation:'personArm 2s ease-in-out 0.5s infinite reverse', transformOrigin:'0px -18px'}}>
-            <rect x="-18" y="-18" width="14" height="4" rx="2" fill="#22c55e" opacity="0.8"/>
+          {/* Body */}
+          <rect x="-5" y="-22" width="10" height="20" rx="3" fill="#14532d" opacity="0.9"/>
+          {/* Left arm group - pivots at shoulder (-5,-19), reaches left to receive */}
+          <g transform="translate(-5,-19)" style={{transformOrigin:'0px 0px', animation:'personArm 2.5s ease-in-out 0.8s infinite reverse'}}>
+            <line x1="0" y1="0" x2="-20" y2="0" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
           </g>
-          <rect x="4" y="-18" width="10" height="4" rx="2" fill="#22c55e" opacity="0.8"/>
-          <rect x="-5" y="-2" width="4" height="12" rx="2" fill="#14532d" opacity="0.9"/>
-          <rect x="1" y="-2" width="4" height="12" rx="2" fill="#14532d" opacity="0.9"/>
+          {/* Right arm - hangs naturally to the right-down */}
+          <line x1="5" y1="-19" x2="17" y2="-9" stroke="#22c55e" strokeWidth="3.5" strokeLinecap="round" opacity="0.85"/>
+          {/* Legs */}
+          <line x1="-2" y1="-2" x2="-5" y2="12" stroke="#14532d" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
+          <line x1="2" y1="-2" x2="5" y2="12" stroke="#14532d" strokeWidth="4" strokeLinecap="round" opacity="0.9"/>
         </g>
 
         {/* MOVING TRUCK */}
