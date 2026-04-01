@@ -131,24 +131,31 @@ public class ConsignmentController {
 
             consignmentRepository.save(consignment);
 
-            // Generate bill
-            BillService.BillResult billResult = billService.generateBill(
-                    consignmentNumber, volume, destination, now);
+            // Generate bill (gracefully handle missing pricing rule)
+            BillService.BillResult billResult = null;
+            String billingWarning = null;
+            try {
+                billResult = billService.generateBill(consignmentNumber, volume, destination, now);
+            } catch (Exception billEx) {
+                billingWarning = "No active pricing rule found for destination: " + destination
+                        + ". Please set up pricing rules and generate the bill manually.";
+            }
 
             // Trigger allocation
             AllocationService.AllocationResult allocationResult =
                     allocationService.checkAndTriggerAllocation(destination);
 
-            // Reload consignment (charges updated)
+            // Reload consignment (charges may have been updated by billing)
             Consignment saved = consignmentRepository.findById(consignmentNumber).orElse(consignment);
 
-            return ResponseEntity.status(201).body(Map.of(
-                    "consignment", toMap(saved),
-                    "bill", billToMap(billResult.bill()),
-                    "pricingBreakdown", billResult.pricingBreakdown(),
-                    "allocationTriggered", allocationResult.triggered(),
-                    "allocationDetails", allocationResultToMap(allocationResult)
-            ));
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("consignment", toMap(saved));
+            response.put("bill", billResult != null ? billToMap(billResult.bill()) : null);
+            response.put("pricingBreakdown", billResult != null ? billResult.pricingBreakdown() : null);
+            response.put("allocationTriggered", allocationResult.triggered());
+            response.put("allocationDetails", allocationResultToMap(allocationResult));
+            if (billingWarning != null) response.put("billingWarning", billingWarning);
+            return ResponseEntity.status(201).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
@@ -196,6 +203,53 @@ public class ConsignmentController {
                 entry.put("note", note);
                 if (user != null) entry.put("updatedBy", user.getName());
                 log.add(entry);
+
+                // If reverting to Registered or Pending, unassign the truck
+                boolean revertingToUnassigned = (newStatus == Consignment.ConsignmentStatus.Registered
+                        || newStatus == Consignment.ConsignmentStatus.Pending)
+                        && c.getAssignedTruckId() != null;
+
+                if (revertingToUnassigned) {
+                    UUID truckId = c.getAssignedTruckId();
+                    truckRepository.findById(truckId).ifPresent(truck -> {
+                        try {
+                            // Reduce truck cargo volume by this consignment's volume
+                            BigDecimal newCargo = truck.getCargoVolume()
+                                    .subtract(c.getVolume()).max(BigDecimal.ZERO);
+                            truck.setCargoVolume(newCargo);
+
+                            // Check remaining allocated consignments on this truck (excluding current)
+                            long remaining = consignmentRepository.findByAssignedTruckId(truckId).stream()
+                                    .filter(other -> !other.getConsignmentNumber().equals(id))
+                                    .filter(other -> other.getStatus() == Consignment.ConsignmentStatus.AllocatedToTruck
+                                            || other.getStatus() == Consignment.ConsignmentStatus.InTransit)
+                                    .count();
+
+                            if (remaining == 0) {
+                                truck.setStatus(com.tccs.model.Truck.TruckStatus.Available);
+                                truck.setDestination(null);
+                                truck.setCargoVolume(BigDecimal.ZERO);
+                            }
+
+                            // Add entry to truck's status history
+                            List<Map<String, Object>> truckLog = objectMapper.readValue(
+                                    truck.getStatusHistory() != null ? truck.getStatusHistory() : "[]",
+                                    objectMapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+                            Map<String, Object> truckEntry = new LinkedHashMap<>();
+                            truckEntry.put("status", truck.getStatus().name());
+                            truckEntry.put("timestamp", OffsetDateTime.now().toString());
+                            truckEntry.put("note", "Consignment " + id + " unassigned (status reverted to " + newStatusStr + ")");
+                            if (user != null) truckEntry.put("updatedBy", user.getName());
+                            truckLog.add(truckEntry);
+                            truck.setStatusHistory(objectMapper.writeValueAsString(truckLog));
+
+                            truckRepository.save(truck);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    c.setAssignedTruckId(null);
+                }
 
                 c.setStatus(newStatus);
                 c.setStatusChangeLog(objectMapper.writeValueAsString(log));

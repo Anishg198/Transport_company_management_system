@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Truck, Clock, MapPin, Package, FileText, AlertCircle, CheckCircle } from 'lucide-react'
-import { consignmentsAPI } from '../services/api'
+import { consignmentsAPI, trucksAPI, allocationAPI } from '../services/api'
 import { useAuth } from '../contexts/AuthContext'
 import { useToast } from '../components/ui/Toast'
 import { formatDateTime, formatCurrency, formatVolume, getStatusBadgeClass, CONSIGNMENT_STATUSES } from '../lib/utils'
@@ -55,6 +55,10 @@ export default function ConsignmentDetail() {
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [statusForm, setStatusForm] = useState({ status: '', note: '' })
   const [updating, setUpdating] = useState(false)
+  const [showAssignModal, setShowAssignModal] = useState(false)
+  const [availableTrucks, setAvailableTrucks] = useState([])
+  const [selectedTruck, setSelectedTruck] = useState('')
+  const [assigning, setAssigning] = useState(false)
 
   useEffect(() => {
     consignmentsAPI.getById(id)
@@ -75,6 +79,33 @@ export default function ConsignmentDetail() {
       toast({ type: 'error', title: 'Error', message: err.response?.data?.error || err.message })
     } finally {
       setUpdating(false)
+    }
+  }
+
+  const openAssignModal = async () => {
+    setSelectedTruck('')
+    setShowAssignModal(true)
+    try {
+      const { data } = await trucksAPI.getAvailable()
+      setAvailableTrucks(data.trucks || [])
+    } catch {
+      toast({ type: 'error', title: 'Error', message: 'Failed to load available trucks' })
+    }
+  }
+
+  const handleAssign = async () => {
+    if (!selectedTruck) return
+    setAssigning(true)
+    try {
+      await allocationAPI.manualAssign({ truckId: selectedTruck, consignmentIds: [id] })
+      toast({ type: 'success', title: 'Assigned', message: 'Consignment assigned to truck' })
+      setShowAssignModal(false)
+      const { data } = await consignmentsAPI.getById(id)
+      setData(data)
+    } catch (err) {
+      toast({ type: 'error', title: 'Error', message: err.response?.data?.error || err.message })
+    } finally {
+      setAssigning(false)
     }
   }
 
@@ -107,6 +138,12 @@ export default function ConsignmentDetail() {
                 <button onClick={() => { setStatusForm({ status: consignment.status, note: '' }); setShowStatusModal(true) }}
                   className="btn-secondary">
                   Update Status
+                </button>
+              )}
+              {(isAdmin() || isManager()) && !consignment.assigned_truck_id &&
+                ['Registered', 'Pending'].includes(consignment.status) && (
+                <button onClick={openAssignModal} className="btn-primary">
+                  <Truck size={16} /> Assign Truck
                 </button>
               )}
               {bill && (
@@ -217,6 +254,34 @@ export default function ConsignmentDetail() {
           </div>
         </div>
       </div>
+
+      {/* Assign Truck Modal */}
+      <Modal isOpen={showAssignModal} onClose={() => setShowAssignModal(false)} title="Assign Truck" size="sm">
+        <div className="space-y-4">
+          <div>
+            <label className="label">Select Available Truck</label>
+            {availableTrucks.length === 0 ? (
+              <p className="text-gray-400 text-sm py-2">No available trucks at the moment.</p>
+            ) : (
+              <select value={selectedTruck} onChange={e => setSelectedTruck(e.target.value)} className="select-field">
+                <option value="">Choose a truck...</option>
+                {availableTrucks.map(t => (
+                  <option key={t.truck_id} value={t.truck_id}>
+                    {t.registration_number} — {t.driver_name} ({t.capacity} m³ cap, {t.current_location})
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => setShowAssignModal(false)} className="btn-secondary flex-1 justify-center">Cancel</button>
+            <button onClick={handleAssign} className="btn-primary flex-1 justify-center"
+              disabled={assigning || !selectedTruck}>
+              {assigning ? 'Assigning...' : 'Assign'}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Status Update Modal */}
       <Modal isOpen={showStatusModal} onClose={() => setShowStatusModal(false)} title="Update Status" size="sm">

@@ -41,6 +41,7 @@ export const authAPI = {
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
   register: (data) => api.post('/auth/register', data),
+  updateProfile: (data) => api.patch('/auth/me', data),
 }
 
 // Dashboard
@@ -101,6 +102,13 @@ export const reportsAPI = {
   truckUsage: (params) => api.get('/reports/truck-usage', { params }),
   exportExcel: (params) => api.get('/reports/export/excel', { params, responseType: 'blob' }),
   exportPdf: (params) => api.get('/reports/export/pdf', { params, responseType: 'blob' }),
+}
+
+// Chat
+export const chatAPI = {
+  getUsers: () => api.get('/chat/users'),
+  getMessages: (params) => api.get('/chat/messages', { params }),
+  sendMessage: (data) => api.post('/chat/messages', data),
 }
 
 // Users

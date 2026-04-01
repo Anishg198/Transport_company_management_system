@@ -415,8 +415,57 @@
 
 /* ── Print styles ── */
 @media print {
-  .no-print { display: none !important; }
-  .bg-orb-1, .bg-orb-2 { display: none !important; }
-  body { background: white !important; color: black !important; }
-  .glass-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; }
+  /* Hide everything except the printable document */
+  body * { visibility: hidden; }
+  #printable, #printable *,
+  #bill-print, #bill-print * { visibility: visible; }
+
+  /* Reset layout so printable fills the page */
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #printable, #bill-print {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px !important;
+    margin: 0 !important;
+  }
+
+  /* Clean up cards for print */
+  .glass-card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+  .glow-border { border: 1px solid #ccc !important; box-shadow: none !important; }
+
+  /* Make all text dark */
+  .text-white, [class*="text-gray"], [class*="text-electric"], [class*="text-amber"] {
+    color: #111 !important;
+  }
+  .text-gray-400, .text-gray-500, .text-gray-600 { color: #555 !important; }
+  th { color: #333 !important; }
+  td { color: #111 !important; }
+
+  /* Table borders */
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border-bottom: 1px solid #ddd !important; }
+
+  /* Signature lines */
+  .border-b { border-bottom: 1px solid #999 !important; }
+
+  /* Background cells */
+  .bg-white\/5, [class*="bg-white"] { background: #f9f9f9 !important; }
+
+  /* Hide non-content elements */
+  .bg-orb-1, .bg-orb-2, .mesh-bg, .no-print { display: none !important; }
+
+  /* Page break control */
+  .glass-card { page-break-inside: avoid; }
 }

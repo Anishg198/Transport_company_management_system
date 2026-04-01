@@ -1,6 +1,7 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { NotificationProvider } from './contexts/NotificationContext'
 import { ToastProvider } from './components/ui/Toast'
 import Layout from './components/Layout/Layout'
 
@@ -18,6 +19,7 @@ import Reports from './pages/Reports'
 import Pricing from './pages/Pricing'
 import Users from './pages/Users'
 import Settings from './pages/Settings'
+import Chat from './pages/Chat'
 
 function ProtectedRoute({ children, roles }) {
   const { user } = useAuth()
@@ -80,6 +82,11 @@ function AppRoutes() {
             <Users />
           </ProtectedRoute>
         } />
+        <Route path="chat" element={
+          <ProtectedRoute roles={['BranchOperator', 'TransportManager', 'SystemAdministrator']}>
+            <Chat />
+          </ProtectedRoute>
+        } />
         <Route path="settings" element={<Settings />} />
       </Route>
 
@@ -92,9 +99,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <ToastProvider>
-          <AppRoutes />
-        </ToastProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <AppRoutes />
+          </ToastProvider>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   )

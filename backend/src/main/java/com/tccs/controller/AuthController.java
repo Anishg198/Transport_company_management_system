@@ -131,4 +131,55 @@ public class AuthController {
         userMap.put("branchLocation", user.getBranchLocation());
         return ResponseEntity.ok(Map.of("user", userMap));
     }
+
+    @PatchMapping("/me")
+    public ResponseEntity<?> updateMe(@AuthenticationPrincipal User user,
+                                      @RequestBody Map<String, Object> body) {
+        if (user == null) return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+
+        // Re-fetch from DB to get latest state
+        User dbUser = userRepository.findById(user.getUserId())
+                .orElse(null);
+        if (dbUser == null) return ResponseEntity.status(404).body(Map.of("error", "User not found"));
+
+        String currentPassword = (String) body.get("currentPassword");
+        if (currentPassword == null || !passwordEncoder.matches(currentPassword, dbUser.getPasswordHash())) {
+            return ResponseEntity.status(400).body(Map.of("error", "Current password is incorrect"));
+        }
+
+        String newUsername = (String) body.get("newUsername");
+        String newPassword = (String) body.get("newPassword");
+
+        if (newUsername != null && !newUsername.isBlank()) {
+            String trimmed = newUsername.trim();
+            if (trimmed.length() < 3) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Username must be at least 3 characters"));
+            }
+            if (!trimmed.equals(dbUser.getUsername()) && userRepository.existsByUsername(trimmed)) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Username already taken"));
+            }
+            dbUser.setUsername(trimmed);
+        }
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            if (newPassword.length() < 6) {
+                return ResponseEntity.badRequest().body(Map.of("error", "New password must be at least 6 characters"));
+            }
+            dbUser.setPasswordHash(passwordEncoder.encode(newPassword));
+        }
+
+        userRepository.save(dbUser);
+
+        // Issue a fresh token with the (possibly new) username
+        String newToken = jwtUtil.generateToken(dbUser.getUserId(), dbUser.getUsername(), dbUser.getRole().name());
+
+        Map<String, Object> userMap = new LinkedHashMap<>();
+        userMap.put("userId", dbUser.getUserId());
+        userMap.put("username", dbUser.getUsername());
+        userMap.put("role", dbUser.getRole());
+        userMap.put("name", dbUser.getName());
+        userMap.put("branchLocation", dbUser.getBranchLocation());
+
+        return ResponseEntity.ok(Map.of("user", userMap, "token", newToken));
+    }
 }

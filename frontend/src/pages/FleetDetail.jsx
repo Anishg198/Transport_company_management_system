@@ -59,7 +59,7 @@ function CapacityRing({ cargo, capacity }) {
 }
 
 // ── AssignModal ────────────────────────────────────────────────────────────
-function AssignModal({ truck, onClose, onSuccess }) {
+function AssignModal({ truck, onClose, onSuccess, isEnRoute }) {
   const toast = useToast()
   const [consignments, setConsignments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -189,7 +189,9 @@ function AssignModal({ truck, onClose, onSuccess }) {
           style={wouldExceed ? { background: '#b45309', boxShadow: '0 0 20px rgba(180,83,9,0.3)' } : {}}
         >
           {assigning ? <Loader2 size={14} className="animate-spin" /> : <CheckSquare size={14} />}
-          {assigning ? 'Assigning…' : `Assign${selected.length > 0 ? ` (${selected.length})` : ''}`}
+          {assigning
+            ? (isEnRoute ? 'Loading…' : 'Assigning…')
+            : `${isEnRoute ? 'Load' : 'Assign'}${selected.length > 0 ? ` (${selected.length})` : ''}`}
         </button>
       </div>
     </div>
@@ -244,7 +246,8 @@ export default function FleetDetail() {
   const capacity = parseFloat(truck.capacity || 0)
   const utilPct = capacity > 0 ? Math.min(cargo / capacity * 100, 100) : 0
   const overCapacity = cargo > capacity
-  const assignable = truck.status === 'Available' || truck.status === 'Allocated'
+  const assignable = truck.status === 'Available' || truck.status === 'Allocated' || truck.status === 'InTransit'
+  const isEnRoute = truck.status === 'InTransit'
 
   return (
     <div>
@@ -356,7 +359,7 @@ export default function FleetDetail() {
               <div className="flex items-center gap-2">
                 {canAssign && assignable && (
                   <button onClick={() => setShowAssignModal(true)} className="btn-secondary py-1.5 text-xs gap-1.5">
-                    <CheckSquare size={13} /> Assign Consignments
+                    <CheckSquare size={13} /> {isEnRoute ? 'Load En-Route' : 'Assign Consignments'}
                   </button>
                 )}
                 {canUpdate && (
@@ -433,7 +436,7 @@ export default function FleetDetail() {
                 </h3>
                 {canAssign && assignable && (
                   <button onClick={() => setShowAssignModal(true)} className="btn-secondary py-1 px-3 text-xs gap-1.5">
-                    <Plus size={12} /> Assign More
+                    <Plus size={12} /> {isEnRoute ? 'Load En-Route' : 'Assign More'}
                   </button>
                 )}
               </div>
@@ -480,7 +483,7 @@ export default function FleetDetail() {
                   <p className="text-gray-500 text-sm">No consignments assigned</p>
                   {canAssign && assignable && (
                     <button onClick={() => setShowAssignModal(true)} className="btn-primary mx-auto mt-3 text-xs">
-                      <Plus size={12} /> Assign Consignments
+                      <Plus size={12} /> {isEnRoute ? 'Load En-Route' : 'Assign Consignments'}
                     </button>
                   )}
                 </div>
@@ -622,11 +625,12 @@ export default function FleetDetail() {
       <Modal
         isOpen={showAssignModal}
         onClose={() => setShowAssignModal(false)}
-        title={`Assign Consignments — ${truck.registration_number}`}
+        title={`${isEnRoute ? 'Load En-Route' : 'Assign Consignments'} — ${truck.registration_number}`}
         size="lg"
       >
         <AssignModal
           truck={truck}
+          isEnRoute={isEnRoute}
           onClose={() => setShowAssignModal(false)}
           onSuccess={() => { fetchData(); setShowAssignModal(false) }}
         />

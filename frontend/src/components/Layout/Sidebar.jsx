@@ -3,9 +3,10 @@ import { NavLink, useLocation } from 'react-router-dom'
 import {
   Truck, LayoutDashboard, Package, Send, FileText,
   BarChart2, Settings, Users, DollarSign, LogOut,
-  ChevronLeft, ChevronRight, Zap, Shield, TrendingUp, MapPin
+  ChevronLeft, ChevronRight, Zap, Shield, TrendingUp, MapPin, MessageSquare
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import { useNotifications } from '../../contexts/NotificationContext'
 import { cn } from '../../lib/utils'
 
 const NAV_ITEMS = [
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { path: '/reports', icon: BarChart2, label: 'Reports', roles: ['TransportManager', 'SystemAdministrator'] },
   { path: '/pricing', icon: DollarSign, label: 'Pricing', roles: ['SystemAdministrator'] },
   { path: '/users', icon: Users, label: 'Users', roles: ['SystemAdministrator'] },
+  { path: '/chat', icon: MessageSquare, label: 'Chat', roles: ['BranchOperator', 'TransportManager', 'SystemAdministrator'] },
   { path: '/settings', icon: Settings, label: 'Settings', roles: ['BranchOperator', 'TransportManager', 'SystemAdministrator'] },
 ]
 
@@ -41,6 +43,7 @@ function getInitials(name) {
 
 export default function Sidebar() {
   const { user, logout } = useAuth()
+  const { unreadTotal } = useNotifications()
   const [collapsed, setCollapsed] = useState(false)
   const location = useLocation()
 
@@ -221,8 +224,18 @@ export default function Sidebar() {
                 <span className="truncate flex-1">{item.label}</span>
               )}
 
+              {/* Unread badge for Chat */}
+              {item.path === '/chat' && unreadTotal > 0 && (
+                <span className={cn(
+                  'flex items-center justify-center rounded-full bg-red-500 text-white font-bold shrink-0',
+                  collapsed ? 'absolute top-1 right-1 w-4 h-4 text-[9px]' : 'w-5 h-5 text-[10px]'
+                )}>
+                  {unreadTotal > 9 ? '9+' : unreadTotal}
+                </span>
+              )}
+
               {/* Active pulse dot */}
-              {isActive && !collapsed && (
+              {isActive && !collapsed && item.path !== '/chat' && (
                 <span className="ml-auto w-1.5 h-1.5 rounded-full bg-electric-400 shrink-0"
                   style={{ boxShadow: '0 0 6px rgba(0,102,255,0.8)' }}
                 />

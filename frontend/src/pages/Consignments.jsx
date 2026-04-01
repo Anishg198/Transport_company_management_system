@@ -25,7 +25,12 @@ function RegisterForm({ onSuccess, onClose }) {
     try {
       const { data } = await consignmentsAPI.create({ ...form, volume: parseFloat(form.volume) })
       setResult(data)
-      toast({ type: 'success', title: 'Consignment Registered', message: `${data.consignment.consignment_number} created` })
+      onSuccess()
+      if (data.billingWarning) {
+        toast({ type: 'warning', title: 'Billing Notice', message: data.billingWarning })
+      } else {
+        toast({ type: 'success', title: 'Consignment Registered', message: `${data.consignment.consignment_number} created` })
+      }
     } catch (err) {
       toast({ type: 'error', title: 'Error', message: err.response?.data?.error || err.message })
     } finally {
@@ -34,7 +39,7 @@ function RegisterForm({ onSuccess, onClose }) {
   }
 
   if (result) {
-    const { consignment, bill, allocationTriggered, allocationDetails } = result
+    const { consignment, bill, allocationTriggered, allocationDetails, billingWarning } = result
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-green-400">
@@ -90,6 +95,13 @@ function RegisterForm({ onSuccess, onClose }) {
           <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
             <AlertTriangle size={16} className="shrink-0 mt-0.5" />
             <div>Volume threshold reached but no trucks available. TransportManager notified.</div>
+          </div>
+        )}
+
+        {billingWarning && (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm">
+            <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+            <div>{billingWarning}</div>
           </div>
         )}
 

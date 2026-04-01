@@ -43,7 +43,7 @@ public class TruckController {
                     .filter(t -> t.getDestination() != null && t.getDestination().toLowerCase().contains(dest))
                     .collect(Collectors.toList());
         }
-        trucks.sort(Comparator.comparing(Truck::getUpdatedAt).reversed());
+        trucks.sort(Comparator.comparing(Truck::getUpdatedAt, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
         return ResponseEntity.ok(Map.of("trucks", trucks.stream().map(this::toMap).collect(Collectors.toList())));
     }
 
@@ -58,7 +58,7 @@ public class TruckController {
         return truckRepository.findById(id).map(truck -> {
             List<Consignment> consignments = consignmentRepository.findByAssignedTruckId(id);
             List<DispatchDocument> dispatches = dispatchRepository.findByTruckId(id);
-            dispatches.sort(Comparator.comparing(DispatchDocument::getDispatchTimestamp).reversed());
+            dispatches.sort(Comparator.comparing(DispatchDocument::getDispatchTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
             return ResponseEntity.ok(Map.of(
                     "truck", toMap(truck),
                     "consignments", consignments.stream().map(this::consToMap).collect(Collectors.toList()),

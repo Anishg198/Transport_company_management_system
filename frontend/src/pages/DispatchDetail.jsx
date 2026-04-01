@@ -28,12 +28,14 @@ export default function DispatchDetail() {
 
   return (
     <div>
-      <Header title="Dispatch Document" actions={
-        <div className="flex gap-2">
-          <Link to="/dispatch" className="btn-secondary"><ArrowLeft size={16} /> Back</Link>
-          <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Print</button>
-        </div>
-      } />
+      <div className="no-print">
+        <Header title="Dispatch Document" actions={
+          <div className="flex gap-2">
+            <Link to="/dispatch" className="btn-secondary"><ArrowLeft size={16} /> Back</Link>
+            <button onClick={() => window.print()} className="btn-primary"><Printer size={16} /> Print</button>
+          </div>
+        } />
+      </div>
 
       <div className="p-6 max-w-4xl mx-auto space-y-5 animate-fade-in" id="printable">
         {/* Document Header */}

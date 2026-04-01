@@ -110,6 +110,7 @@ export default function Bills() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
   React.useEffect(() => {
     if (urlId) handleSearch(urlId)
@@ -130,6 +131,21 @@ export default function Bills() {
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleGenerate = async () => {
+    const query = searchId.trim()
+    if (!query) return
+    setGenerating(true)
+    try {
+      await billsAPI.generate({ consignmentNumber: query })
+      toast({ type: 'success', title: 'Bill Generated', message: 'Bill created successfully' })
+      handleSearch(query)
+    } catch (err) {
+      toast({ type: 'error', title: 'Error', message: err.response?.data?.error || 'Failed to generate bill' })
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -168,7 +184,13 @@ export default function Bills() {
               </button>
             </div>
             {searched && !result && !loading && (
-              <p className="text-red-400 text-sm mt-4">No bill found for this consignment number</p>
+              <div className="mt-4 space-y-3">
+                <p className="text-red-400 text-sm">No bill found for this consignment number</p>
+                <button onClick={handleGenerate} disabled={generating} className="btn-primary w-full justify-center">
+                  {generating ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <FileText size={16} />}
+                  {generating ? 'Generating...' : 'Generate Bill'}
+                </button>
+              </div>
             )}
           </div>
         </div>

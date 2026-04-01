@@ -109,8 +109,8 @@ export default function Pricing() {
 
   const toggleActive = async (rule) => {
     try {
-      await pricingAPI.update(rule.id, { isActive: !rule.is_active })
-      toast({ type: 'success', title: 'Updated', message: `Rule ${rule.is_active ? 'deactivated' : 'activated'}` })
+      await pricingAPI.update(rule.id, { isActive: !rule.isActive })
+      toast({ type: 'success', title: 'Updated', message: `Rule ${rule.isActive ? 'deactivated' : 'activated'}` })
       fetchRules()
     } catch (err) {
       toast({ type: 'error', title: 'Error', message: err.message })
@@ -154,21 +154,21 @@ export default function Pricing() {
                   {rules.map(rule => (
                     <tr key={rule.id} className="table-row">
                       <td className="px-4 py-3 font-medium text-white">{rule.destination}</td>
-                      <td className="px-4 py-3 text-amber-400 font-semibold">₹{rule.rate_per_cubic_meter}</td>
-                      <td className="px-4 py-3 text-gray-300">{formatCurrency(rule.minimum_charge)}</td>
-                      <td className="px-4 py-3 text-gray-400">{formatDate(rule.effective_date)}</td>
-                      <td className="px-4 py-3 text-gray-400">{rule.expiry_date ? formatDate(rule.expiry_date) : '—'}</td>
+                      <td className="px-4 py-3 text-amber-400 font-semibold">₹{rule.ratePerCubicMeter}</td>
+                      <td className="px-4 py-3 text-gray-300">{formatCurrency(rule.minimumCharge)}</td>
+                      <td className="px-4 py-3 text-gray-400">{formatDate(rule.effectiveDate)}</td>
+                      <td className="px-4 py-3 text-gray-400">{rule.expiryDate ? formatDate(rule.expiryDate) : '—'}</td>
                       <td className="px-4 py-3">
                         <button onClick={() => toggleActive(rule)}
                           className={`flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full transition-all ${
-                            rule.is_active ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                            rule.isActive ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                           }`}>
-                          {rule.is_active ? <CheckCircle size={12} /> : <XCircle size={12} />}
-                          {rule.is_active ? 'Active' : 'Inactive'}
+                          {rule.isActive ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                          {rule.isActive ? 'Active' : 'Inactive'}
                         </button>
                       </td>
                       <td className="px-4 py-3">
-                        <button onClick={() => { setEditingRule({ ...rule, ratePerCubicMeter: rule.rate_per_cubic_meter, minimumCharge: rule.minimum_charge, effectiveDate: rule.effective_date, expiryDate: rule.expiry_date || '', isActive: rule.is_active }); setShowForm(true) }}
+                        <button onClick={() => { setEditingRule({ ...rule, ratePerCubicMeter: rule.ratePerCubicMeter, minimumCharge: rule.minimumCharge, effectiveDate: rule.effectiveDate, expiryDate: rule.expiryDate || '', isActive: rule.isActive }); setShowForm(true) }}
                           className="btn-secondary py-1 px-2">
                           <Edit size={12} /> Edit
                         </button>

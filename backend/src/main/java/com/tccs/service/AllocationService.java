@@ -106,8 +106,11 @@ public class AllocationService {
         Truck truck = truckRepository.findById(truckId)
                 .orElseThrow(() -> new RuntimeException("Truck not found"));
 
-        if (truck.getStatus() != Truck.TruckStatus.Available && truck.getStatus() != Truck.TruckStatus.Allocated) {
-            throw new RuntimeException("Truck must be Available or Allocated to assign consignments (current: " + truck.getStatus() + ")");
+        boolean isInTransit = truck.getStatus() == Truck.TruckStatus.InTransit;
+        if (truck.getStatus() != Truck.TruckStatus.Available
+                && truck.getStatus() != Truck.TruckStatus.Allocated
+                && !isInTransit) {
+            throw new RuntimeException("Truck must be Available, Allocated, or InTransit to assign consignments (current: " + truck.getStatus() + ")");
         }
 
         List<Consignment> toAssign = consignmentRepository.findAllById(consignmentIds);
@@ -118,9 +121,14 @@ public class AllocationService {
         String destination = truck.getDestination();
 
         for (Consignment c : toAssign) {
-            appendStatusLog(c, c.getStatus(), Consignment.ConsignmentStatus.AllocatedToTruck,
-                    "Manually assigned to truck " + truck.getRegistrationNumber());
-            c.setStatus(Consignment.ConsignmentStatus.AllocatedToTruck);
+            Consignment.ConsignmentStatus newStatus = isInTransit
+                    ? Consignment.ConsignmentStatus.InTransit
+                    : Consignment.ConsignmentStatus.AllocatedToTruck;
+            String note = isInTransit
+                    ? "Loaded en-route onto truck " + truck.getRegistrationNumber() + " (already in transit)"
+                    : "Manually assigned to truck " + truck.getRegistrationNumber();
+            appendStatusLog(c, c.getStatus(), newStatus, note);
+            c.setStatus(newStatus);
             c.setAssignedTruckId(truckId);
             consignmentRepository.save(c);
             addedVolume = addedVolume.add(c.getVolume());
@@ -129,9 +137,12 @@ public class AllocationService {
         }
 
         BigDecimal newVolume = (truck.getCargoVolume() != null ? truck.getCargoVolume() : BigDecimal.ZERO).add(addedVolume);
-        appendTruckStatusLog(truck, Truck.TruckStatus.Allocated,
-                String.format("Manually assigned %d consignments (%.2fm³ total load)", toAssign.size(), newVolume.doubleValue()));
-        truck.setStatus(Truck.TruckStatus.Allocated);
+        // Keep InTransit trucks in their current status; only change non-InTransit trucks to Allocated
+        Truck.TruckStatus newTruckStatus = isInTransit ? Truck.TruckStatus.InTransit : Truck.TruckStatus.Allocated;
+        appendTruckStatusLog(truck, newTruckStatus,
+                String.format("%s %d consignments en-route (%.2fm³ total load)",
+                        isInTransit ? "Loaded" : "Manually assigned", toAssign.size(), newVolume.doubleValue()));
+        truck.setStatus(newTruckStatus);
         truck.setDestination(destination);
         truck.setCargoVolume(newVolume);
         truckRepository.save(truck);
