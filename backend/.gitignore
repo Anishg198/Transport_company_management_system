@@ -1,0 +1,13 @@
+# Eclipse metadata
+.metadata
+.classpath
+.project
+.factorypath
+.settings/
+
+# If you use IntelliJ as well
+.idea/
+*.iml
+
+# If you use VS Code
+.vscode/
