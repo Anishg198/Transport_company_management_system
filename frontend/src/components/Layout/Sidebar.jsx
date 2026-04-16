@@ -197,6 +197,7 @@ export default function Sidebar() {
             <NavLink
               key={item.path}
               to={item.path}
+              data-testid={`nav-${item.label.toLowerCase().replace(' ', '-')}`}
               title={collapsed ? item.label : undefined}
               className={cn(
                 'nav-item group relative',
@@ -248,6 +249,7 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="p-2 border-t border-white/[0.06]">
         <button
+          data-testid="sidebar-logout-btn"
           onClick={logout}
           title={collapsed ? 'Logout' : undefined}
           className={cn(

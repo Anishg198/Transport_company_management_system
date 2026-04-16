@@ -189,7 +189,7 @@ export default function Register() {
                 <CheckCircle size={40} className="text-green-400" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-3">Registration Submitted!</h2>
+            <h2 data-testid="register-success-heading" className="text-2xl font-bold text-white mb-3">Registration Submitted!</h2>
             <p className="text-gray-400 text-sm leading-relaxed mb-2">
               Your registration request has been received.
             </p>
@@ -296,7 +296,7 @@ export default function Register() {
             <h2 className="text-lg font-bold text-white mb-5">Create Account</h2>
 
             {error && (
-              <div className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+              <div data-testid="register-error-msg" className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
                 <AlertCircle size={15} className="shrink-0" />
                 {error}
               </div>
@@ -307,6 +307,7 @@ export default function Register() {
               <div>
                 <label className="label">Full Name *</label>
                 <input
+                  data-testid="register-name-input"
                   type="text"
                   name="name"
                   value={form.name}
@@ -322,6 +323,7 @@ export default function Register() {
               <div>
                 <label className="label">Username *</label>
                 <input
+                  data-testid="register-username-input"
                   type="text"
                   name="username"
                   value={form.username}
@@ -338,6 +340,7 @@ export default function Register() {
                 <label className="label">Password *</label>
                 <div className="relative">
                   <input
+                    data-testid="register-password-input"
                     type={showPassword ? 'text' : 'password'}
                     name="password"
                     value={form.password}
@@ -362,6 +365,7 @@ export default function Register() {
                 <label className="label">Confirm Password *</label>
                 <div className="relative">
                   <input
+                    data-testid="register-confirm-password-input"
                     type={showConfirm ? 'text' : 'password'}
                     name="confirmPassword"
                     value={form.confirmPassword}
@@ -393,6 +397,7 @@ export default function Register() {
               <div>
                 <label className="label">Role Preference *</label>
                 <select
+                  data-testid="register-role-select"
                   name="rolePreference"
                   value={form.rolePreference}
                   onChange={handleChange}
@@ -419,6 +424,7 @@ export default function Register() {
               </div>
 
               <button
+                data-testid="register-submit-btn"
                 type="submit"
                 className="btn-primary w-full justify-center py-3 text-sm mt-1"
                 disabled={loading}

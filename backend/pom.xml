@@ -19,6 +19,9 @@
 
   <properties>
     <java.version>21</java.version>
+    <!-- Override with -Dselenium.headless=true for CI/CD -->
+    <selenium.headless>false</selenium.headless>
+    <selenium.frontend.url>http://localhost:5173</selenium.frontend.url>
   </properties>
 
   <dependencies>
@@ -107,6 +110,22 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Selenium WebDriver -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>4.33.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- WebDriverManager — automatic ChromeDriver binary management -->
+    <dependency>
+      <groupId>io.github.bonigarcia</groupId>
+      <artifactId>webdrivermanager</artifactId>
+      <version>5.9.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -124,6 +143,30 @@
           </annotationProcessorPaths>
         </configuration>
       </plugin>
+      <!-- Maven Failsafe — runs *IT.java integration tests in verify phase -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>3.1.2</version>
+        <configuration>
+          <!-- Pass -Dheadless=true on CI; defaults to false for local runs -->
+          <systemPropertyVariables>
+            <headless>${selenium.headless}</headless>
+            <frontend.url>${selenium.frontend.url}</frontend.url>
+          </systemPropertyVariables>
+          <!-- Suppress "Unable to find CDP implementation" warnings for new Chrome versions -->
+          <argLine>-Djava.util.logging.config.file=${project.basedir}/src/test/resources/logging.properties</argLine>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>

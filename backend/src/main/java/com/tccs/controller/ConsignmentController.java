@@ -127,6 +127,10 @@ public class ConsignmentController {
                     .status(Consignment.ConsignmentStatus.Registered)
                     .statusChangeLog(statusLog)
                     .createdBy(user != null ? user.getUserId() : null)
+                    // Explicitly set timestamps: Spring Data calls merge() (not persist())
+                    // for entities with a non-null custom String ID, skipping @PrePersist.
+                    .createdAt(now)
+                    .updatedAt(now)
                     .build();
 
             consignmentRepository.save(consignment);

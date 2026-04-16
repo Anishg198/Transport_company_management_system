@@ -235,7 +235,7 @@ export default function Login() {
             <h2 className="text-xl font-bold text-white mb-6">Sign In</h2>
 
             {error && (
-              <div className="flex items-center gap-2 p-3 mb-5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+              <div data-testid="login-error-msg" className="flex items-center gap-2 p-3 mb-5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
                 <AlertCircle size={16} className="shrink-0" />
                 {error}
               </div>
@@ -245,6 +245,7 @@ export default function Login() {
               <div>
                 <label className="label">Username</label>
                 <input
+                  data-testid="login-username-input"
                   type="text"
                   value={username}
                   onChange={e => setUsername(e.target.value)}
@@ -258,6 +259,7 @@ export default function Login() {
                 <label className="label">Password</label>
                 <div className="relative">
                   <input
+                    data-testid="login-password-input"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
@@ -285,6 +287,7 @@ export default function Login() {
                 <label htmlFor="rememberMe" className="text-sm text-gray-400 cursor-pointer">Remember me</label>
               </div>
               <button
+                data-testid="login-submit-btn"
                 type="submit"
                 className="btn-primary w-full justify-center py-3 text-base mt-2"
                 disabled={loading}
@@ -302,6 +305,7 @@ export default function Login() {
             <p className="text-center text-sm text-gray-500 mt-5">
               Don&apos;t have an account?{' '}
               <Link
+                data-testid="login-register-link"
                 to="/register"
                 className="text-electric-400 hover:text-electric-300 font-medium transition-colors"
               >

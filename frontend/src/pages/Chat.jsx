@@ -41,6 +41,7 @@ function UserItem({ u, isSelected, onClick, hasUnread }) {
   const style = ROLE_STYLES[u.role] || ROLE_STYLES.BranchOperator
   return (
     <button
+      data-testid={`chat-user-${u.username}`}
       onClick={onClick}
       className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all text-left ${
         isSelected ? 'bg-electric-500/20 border border-electric-500/30' : 'hover:bg-white/5 border border-transparent'
@@ -84,7 +85,7 @@ function UserItem({ u, isSelected, onClick, hasUnread }) {
 function MessageBubble({ msg, isOwn }) {
   const style = ROLE_STYLES[msg.sender_role] || ROLE_STYLES.BranchOperator
   return (
-    <div className={`flex items-end gap-2 mb-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+    <div data-testid={isOwn ? 'chat-msg-own' : 'chat-msg-other'} className={`flex items-end gap-2 mb-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
       {!isOwn && <Avatar name={msg.sender_name} role={msg.sender_role} size="sm" />}
       <div className={`flex flex-col gap-1 max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
         {!isOwn && (
@@ -234,6 +235,7 @@ export default function Chat() {
             <div className="relative">
               <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
               <input
+                data-testid="chat-search-input"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="input-field pl-8 text-sm py-2"
@@ -241,11 +243,11 @@ export default function Chat() {
               />
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+          <div data-testid="chat-user-list" className="flex-1 overflow-y-auto p-2 space-y-0.5">
             {usersLoading ? (
               <div className="text-center text-gray-500 text-sm py-8">Loading...</div>
             ) : filteredUsers.length === 0 ? (
-              <div className="text-center text-gray-500 text-sm py-8">No users found</div>
+              <div data-testid="chat-no-users" className="text-center text-gray-500 text-sm py-8">No users found</div>
             ) : filteredUsers.map(u => (
               <UserItem
                 key={u.user_id}
@@ -261,7 +263,7 @@ export default function Chat() {
         {/* Right: conversation */}
         <div className="flex-1 flex flex-col min-w-0">
           {!selectedUser ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
+            <div data-testid="chat-empty-state" className="flex-1 flex flex-col items-center justify-center text-gray-500">
               <MessageSquare size={48} className="mb-4 opacity-20" />
               <p className="text-sm">Select a person to start chatting</p>
             </div>
@@ -280,9 +282,9 @@ export default function Chat() {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 min-h-0">
+              <div data-testid="chat-messages-container" className="flex-1 overflow-y-auto p-4 min-h-0">
                 {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-600">
+                  <div data-testid="chat-conversation-empty" className="flex flex-col items-center justify-center h-full text-gray-600">
                     <p className="text-sm">No messages yet. Say hello!</p>
                   </div>
                 ) : (
@@ -304,6 +306,7 @@ export default function Chat() {
                 <div className="flex items-center gap-2">
                   <Package size={12} className="text-gray-600 shrink-0" />
                   <input
+                    data-testid="chat-consignment-ref-input"
                     value={consignmentRef}
                     onChange={e => setConsignmentRef(e.target.value)}
                     className="input-field font-mono text-xs py-1.5 w-52"
@@ -312,6 +315,7 @@ export default function Chat() {
                 </div>
                 <div className="flex gap-2">
                   <textarea
+                    data-testid="chat-message-input"
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -320,6 +324,7 @@ export default function Chat() {
                     placeholder={`Message ${selectedUser.name}… (Enter to send)`}
                   />
                   <button
+                    data-testid="chat-send-btn"
                     onClick={handleSend}
                     disabled={sending || !input.trim()}
                     className="btn-primary px-4 self-end shrink-0 disabled:opacity-50"

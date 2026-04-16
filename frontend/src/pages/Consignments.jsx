@@ -50,7 +50,7 @@ function RegisterForm({ onSuccess, onClose }) {
         <div className="glass-card p-4 space-y-2">
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Consignment Number</span>
-            <span className="font-mono font-bold text-electric-400">{consignment.consignment_number}</span>
+            <span data-testid="consignment-number-result" className="font-mono font-bold text-electric-400">{consignment.consignment_number}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-400">Destination</span>
@@ -122,13 +122,13 @@ function RegisterForm({ onSuccess, onClose }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="label">Volume (cubic meters) *</label>
-          <input type="number" step="0.01" min="0.01" value={form.volume}
+          <input data-testid="consignment-volume-input" type="number" step="0.01" min="0.01" value={form.volume}
             onChange={e => setForm(p => ({ ...p, volume: e.target.value }))}
             className="input-field" placeholder="e.g. 50.00" required />
         </div>
         <div>
           <label className="label">Destination *</label>
-          <select value={form.destination} onChange={e => setForm(p => ({ ...p, destination: e.target.value }))}
+          <select data-testid="consignment-destination-select" value={form.destination} onChange={e => setForm(p => ({ ...p, destination: e.target.value }))}
             className="select-field" required>
             <option value="">Select destination</option>
             {DESTINATIONS.map(d => <option key={d} value={d}>{d}</option>)}
@@ -137,17 +137,17 @@ function RegisterForm({ onSuccess, onClose }) {
       </div>
       <div>
         <label className="label">Sender Address *</label>
-        <textarea value={form.senderAddress} onChange={e => setForm(p => ({ ...p, senderAddress: e.target.value }))}
+        <textarea data-testid="consignment-sender-input" value={form.senderAddress} onChange={e => setForm(p => ({ ...p, senderAddress: e.target.value }))}
           className="input-field" rows={2} placeholder="Full sender address" required />
       </div>
       <div>
         <label className="label">Receiver Address *</label>
-        <textarea value={form.receiverAddress} onChange={e => setForm(p => ({ ...p, receiverAddress: e.target.value }))}
+        <textarea data-testid="consignment-receiver-input" value={form.receiverAddress} onChange={e => setForm(p => ({ ...p, receiverAddress: e.target.value }))}
           className="input-field" rows={2} placeholder="Full receiver address at destination" required />
       </div>
       <div className="flex gap-3 pt-2">
         <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Cancel</button>
-        <button type="submit" className="btn-primary flex-1 justify-center" disabled={loading}>
+        <button data-testid="consignment-submit-btn" type="submit" className="btn-primary flex-1 justify-center" disabled={loading}>
           {loading ? 'Registering...' : 'Register & Generate Bill'}
         </button>
       </div>
@@ -192,7 +192,7 @@ export default function Consignments() {
       <Header
         title="Consignments"
         actions={canRegister && (
-          <button onClick={() => setShowRegister(true)} className="btn-primary">
+          <button data-testid="open-register-modal-btn" onClick={() => setShowRegister(true)} className="btn-primary">
             <Plus size={16} /> Register Consignment
           </button>
         )}
@@ -203,7 +203,7 @@ export default function Consignments() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
             <div className="lg:col-span-2 relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
+              <input data-testid="consignment-search-input" value={filters.search} onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
                 className="input-field pl-9" placeholder="Search consignments..." />
             </div>
             <select value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value }))} className="select-field">
